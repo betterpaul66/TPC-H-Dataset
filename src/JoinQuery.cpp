@@ -31,15 +31,14 @@ size_t JoinQuery::avg(std::string segmentParam)
 
 
   std::ifstream c(customer);
-  std::unordered_set<std::string> Custkey;
+  std::unordered_set<std::string> Custkey; // !!!use unordered_set for customer key to achieve O(1) complexity join!!!
    
   while (std::getline(c, cline, '\n')) {
 		
-	  if (cline.find(segmentParam) != std::string::npos)
+	  if (cline.find(segmentParam) != std::string::npos) //look up the input customer segment
 	  {
-      /*  std::cout << cline << std::endl;*/
-        std::size_t c_cize1 = cline.find("|", 0);
-        Custkey.insert(cline.substr(0, c_cize1));
+        	std::size_t c_cize1 = cline.find("|", 0);
+        	Custkey.insert(cline.substr(0, c_cize1)); //return the customer key
 	  }
 
    }
@@ -52,19 +51,19 @@ size_t JoinQuery::avg(std::string segmentParam)
    std::unordered_set<std::string> Orderkey;
   while (std::getline(o, oline, '\n')) {
       
-	  std::size_t o_oize1 = oline.find("|", 0);
+	  	std::size_t o_oize1 = oline.find("|", 0);
     
-      std::string keyo = oline.substr(0, o_oize1);
+      	  	std::string keyo = oline.substr(0, o_oize1);
          
-      std::size_t o_oize2 = oline.find("|", o_oize1+1);
-      std::string keyc = oline.substr(o_oize1 + 1, o_oize2-o_oize1-1);
+      	   	std::size_t o_oize2 = oline.find("|", o_oize1+1); // lookup the customer key
+      		std::string keyc = oline.substr(o_oize1 + 1, o_oize2-o_oize1-1);
        
-      if (Custkey.find(keyc) != Custkey.end())
-	  { 
-		  Orderkey.insert(keyo);
+      		if (Custkey.find(keyc) != Custkey.end())
+	  	{ 
+		  Orderkey.insert(keyo); // return order key
           
          
-	  }
+	  	}
    }
 
  
@@ -72,23 +71,24 @@ size_t JoinQuery::avg(std::string segmentParam)
     while (std::getline(l, lline, '\n')) {
 
 		
-		std::size_t l_lize1 = lline.find("|", 0);
-        std::string keyo = lline.substr(0, l_lize1); 
+		std::size_t l_lize1 = lline.find("|", 0); // lookup the order key
+        	std::string keyo = lline.substr(0, l_lize1); 
 		
 		std::size_t l_lize2 = lline.find("|", l_lize1+1);
-        std::size_t l_lize3 = lline.find("|", l_lize2+1);
-        std::size_t l_lize4 = lline.find("|", l_lize3+1);
-        std::size_t l_lize5 = lline.find("|", l_lize4 + 1);
-        std::string valuel = lline.substr(l_lize4 + 1, l_lize5 - l_lize4 - 1);
+        	std::size_t l_lize3 = lline.find("|", l_lize2+1);
+        	std::size_t l_lize4 = lline.find("|", l_lize3+1);
+        	std::size_t l_lize5 = lline.find("|", l_lize4 + 1);
+        	std::string valuel = lline.substr(l_lize4 + 1, l_lize5 - l_lize4 - 1);
         
-        if (Orderkey.find(keyo) != Orderkey.end()) { 
-			sumq += std::stod(valuel);
-           ++j;
-		}
+       		 if (Orderkey.find(keyo) != Orderkey.end()) 
+		 	{ 
+			sumq += std::stod(valuel); //return the sum 
+           		++j; //return the count
+			}
 		}
 
       
-   result = sumq / j * 100;
+   result = sumq / j * 100; //calculate average
    return result;
 }
 //---------------------------------------------------------------------------
